@@ -85,7 +85,7 @@ Create a new dataframe (copy of the original one) and update the NA values with 
 ```{r}
 activity_df_no_nas <- activity_df
 
-for (i in 1:nrow(activity_df_no_nas)) {
+for(i in 1:nrow(activity_df_no_nas)) {
      if(is.na(activity_df_no_nas[i, 1])) {
           interval <- activity_df_no_nas[i, 3]
           steps_interval_avg <- 
@@ -123,4 +123,24 @@ These values do not differ from the estimates from the first part of the assignm
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Could not finish on time!
+Create a new factor variable in the filled-in missing values dataset with two levels ??? ???weekday??? and ???weekend??? indicating whether a given date is a weekday or weekend day.
+
+```{r}
+activity_df_no_nas$daytype <- ifelse(weekdays(activity_df_no_nas$date) %in% c("Saturday","Sunday"), "weekend", "weekday")
+```
+
+Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
+
+First we will create a new dataframe with the average number of steps taken by the 5-minute interval and the new factor variable just created.
+
+```{r}
+average_daily_activity_daytype <- aggregate(steps ~ interval + daytype, data = activity_df_no_nas, FUN = mean)
+```
+
+Plot the panel using lattice.
+
+```{r}
+library(lattice)
+xyplot(steps ~ interval | factor(daytype), data=average_daily_activity_daytype,
+       xlab="Interval", ylab="Number of steps",layout = c(1, 2), type="l")
+```
